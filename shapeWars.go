@@ -99,6 +99,8 @@ func run() {
 
 	win.Clear(colornames.Black)
 
+	initAudo()
+
 	last = time.Now()
 	for !win.Closed() {
 		var (

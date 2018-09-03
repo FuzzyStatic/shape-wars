@@ -18,28 +18,28 @@ import (
 
 // Audio constants
 const (
-	WAVEXPLOSION = "./audio/explosion.wav"
-	WAVMISSILE   = "./audio/missile.wav"
+	WAVSAMPLERATE = 44100
+	WAVEXPLOSION  = "./audio/explosion.wav"
+	WAVMISSILE    = "./audio/missile.wav"
 )
 
+func initAudo() {
+	var format beep.Format
+
+	format.SampleRate = WAVSAMPLERATE
+
+	speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/50))
+
+}
+
 func playWavAudio(file string) {
-	go func() {
-		var (
-			done   chan struct{}
-			f      *os.File
-			s      beep.StreamSeekCloser
-			format beep.Format
-		)
+	var (
+		f *os.File
+		s beep.StreamSeekCloser
+	)
 
-		done = make(chan struct{})
-		f, _ = os.Open(file)
-		s, format, _ = wav.Decode(f)
-		speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/50))
-		speaker.Play(beep.Seq(s, beep.Callback(func() {
-			close(done)
-		})))
-		<-done
-	}()
+	f, _ = os.Open(file)
+	s, _, _ = wav.Decode(f)
 
-	return
+	speaker.Play(s)
 }
